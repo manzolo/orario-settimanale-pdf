@@ -1,0 +1,56 @@
+name: Genera PDF orario
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'genera_html.py'
+      - 'orario.example.csv'
+      - '.github/workflows/genera-pdf.yml'
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  genera:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Installa dipendenze WeasyPrint
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 \
+            libharfbuzz0b libcairo2 libffi8 \
+            shared-mime-info fonts-liberation fonts-dejavu-core
+
+      - name: Installa WeasyPrint
+        run: pip install weasyprint
+
+      - name: Genera HTML da CSV di esempio
+        run: python3 genera_html.py orario.example.csv
+
+      - name: Verifica HTML generato
+        run: |
+          [ -f orario.html ] || { echo "✗ orario.html non trovato"; exit 1; }
+          echo "✓ orario.html generato ($(wc -l < orario.html) righe)"
+
+      - name: Genera PDF con WeasyPrint
+        run: python3 -m weasyprint orario.html orario.pdf
+
+      - name: Verifica PDF generato
+        run: |
+          [ -f orario.pdf ] || { echo "✗ orario.pdf non trovato"; exit 1; }
+          SIZE=$(du -k orario.pdf | cut -f1)
+          [ "$SIZE" -gt 0 ] || { echo "✗ orario.pdf è vuoto"; exit 1; }
+          echo "✓ orario.pdf generato (${SIZE}KB)"
+
+      - name: Upload PDF come artefatto
+        uses: actions/upload-artifact@v4
+        with:
+          name: orario-pdf
+          path: orario.pdf
+          retention-days: 30

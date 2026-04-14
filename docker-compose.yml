@@ -1,0 +1,8 @@
+services:
+  pdf-generator:
+    build: .
+    container_name: pdf-generator
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: ./generate-pdf.sh
