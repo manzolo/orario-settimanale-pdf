@@ -103,6 +103,8 @@ def load(path):
     with open(path, encoding='utf-8') as f:
         for row in csv.DictReader(f):
             row = {k.strip(): (v.strip() if v else '') for k, v in row.items()}
+            if row.get('stampa', '').lower() == 'no':
+                continue
             if row['inizio'].lower() == 'mattina':
                 mattina.append(row)
             else:

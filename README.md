@@ -47,9 +47,20 @@ giorno,nome,attivita,inizio,fine,note
 | `fine`     | Orario `HH:MM` — lasciare **vuoto** se `inizio` è `mattina` |
 | `note`     | Testo opzionale mostrato sotto il nome (es. `a scuola`)  |
 | `colore`   | Colore HTML opzionale (es. `#fde68a`); se assente usa il default per nome |
+| `stampa`   | Se `no`, la riga viene ignorata nella generazione (default: inclusa)      |
 
 Gli orari vengono arrotondati automaticamente al quarto d'ora di 30 minuti più vicino per la costruzione della griglia.  
 Se due attività si sovrappongono nello stesso giorno, la colonna viene **divisa automaticamente** in due sotto-colonne.
+
+### Escludere una riga dalla stampa
+
+Imposta `stampa=no` per tenere una riga nel CSV senza farla comparire nell'output:
+
+```
+Sabato,Mario,Nuoto,09:00,10:30,,#c7d2fe,no
+```
+
+Utile per attività sospese temporaneamente o dati da tenere in archivio.
 
 ### Colori automatici
 
