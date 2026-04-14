@@ -35,22 +35,22 @@ jobs:
 
       - name: Verifica HTML generato
         run: |
-          [ -f orario.html ] || { echo "✗ orario.html non trovato"; exit 1; }
-          echo "✓ orario.html generato ($(wc -l < orario.html) righe)"
+          [ -f orario.example.html ] || { echo "✗ orario.example.html non trovato"; exit 1; }
+          echo "✓ orario.example.html generato ($(wc -l < orario.example.html) righe)"
 
       - name: Genera PDF con WeasyPrint
-        run: python3 -m weasyprint orario.html orario.pdf
+        run: python3 -m weasyprint orario.example.html orario.example.pdf
 
       - name: Verifica PDF generato
         run: |
-          [ -f orario.pdf ] || { echo "✗ orario.pdf non trovato"; exit 1; }
-          SIZE=$(du -k orario.pdf | cut -f1)
-          [ "$SIZE" -gt 0 ] || { echo "✗ orario.pdf è vuoto"; exit 1; }
-          echo "✓ orario.pdf generato (${SIZE}KB)"
+          [ -f orario.example.pdf ] || { echo "✗ orario.example.pdf non trovato"; exit 1; }
+          SIZE=$(du -k orario.example.pdf | cut -f1)
+          [ "$SIZE" -gt 0 ] || { echo "✗ orario.example.pdf è vuoto"; exit 1; }
+          echo "✓ orario.example.pdf generato (${SIZE}KB)"
 
       - name: Upload PDF come artefatto
         uses: actions/upload-artifact@v4
         with:
           name: orario-pdf
-          path: orario.pdf
+          path: orario.example.pdf
           retention-days: 30
