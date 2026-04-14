@@ -288,20 +288,39 @@ def generate(entries, mattina, out='orario.html'):
 
     # Riga Mattina
     if mattina:
-        by_day = {e['giorno']: e for e in mattina}
+        by_day = defaultdict(list)
+        for e in mattina:
+            by_day[e['giorno']].append(e)
+
         lines.append('    <tr>')
         lines.append('      <td class="orario">Mattina</td>')
         for d in active_days:
             cs = ' colspan="2"' if d in day_cols else ''
-            if d in by_day:
-                e = by_day[d]
+            events = by_day.get(d, [])
+            if not events:
+                lines.append(f'      <td class="empty"{cs}></td>')
+            elif len(events) == 1:
+                e = events[0]
                 note_html = f'<br><span class="time">{e["note"]}</span>' if e.get('note') else ''
                 lines.append(
                     f'      <td style="background-color:{color_for(e)}; border-radius:8px;"{cs}>'
                     f'<span class="name">{e["nome"]} {e["attivita"]}</span>{note_html}</td>'
                 )
             else:
-                lines.append(f'      <td class="empty"{cs}></td>')
+                # Più eventi mattina nello stesso giorno: celle impilate
+                divs = []
+                for i, e in enumerate(events):
+                    mb = ' margin-bottom:2px;' if i < len(events) - 1 else ''
+                    note_html = f'<br><span class="time">{e["note"]}</span>' if e.get('note') else ''
+                    divs.append(
+                        f'<div style="background-color:{color_for(e)};{mb} padding:5px 4px; border-radius:6px;">'
+                        f'<span class="name">{e["nome"]} {e["attivita"]}</span>{note_html}</div>'
+                    )
+                lines.append(
+                    f'      <td style="padding:3px; vertical-align:top;"{cs}>'
+                    + '\n        '.join([''] + divs)
+                    + '\n      </td>'
+                )
         lines.append('    </tr>')
 
     # Righe orarie
