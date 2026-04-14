@@ -1,11 +1,11 @@
-giorno,nome,attivita,inizio,fine,note
-Martedi,Mario,Ginnastica,mattina,mattina,a scuola
-Martedi,Mario,Calcio,16:30,18:00,
-Giovedi,Mario,Calcio,16:30,18:00,
-Lunedi,Anna,Danza,17:15,18:15,
-Venerdi,Anna,Danza,18:00,19:15,
-Martedi,Anna,Danza,19:15,20:30,
-Martedi,Luca,Canto,17:00,17:30,
-Martedi,Luca,Judo,18:30,19:30,
-Giovedi,Luca,Judo,18:30,19:30,
-Giovedi,Anna,Disegno,21:00,23:00,
+giorno,nome,attivita,inizio,fine,note,colore
+Martedi,Mario,Ginnastica,mattina,,a scuola,#c7d2fe
+Martedi,Mario,Calcio,16:30,18:00,,#c7d2fe
+Giovedi,Mario,Calcio,16:30,18:00,,#c7d2fe
+Lunedi,Anna,Danza,17:15,18:15,,#fde68a
+Venerdi,Anna,Danza,18:00,19:15,,#fde68a
+Martedi,Anna,Danza,19:15,20:30,,#fde68a
+Martedi,Luca,Canto,17:00,17:30,,#bbf7d0
+Martedi,Luca,Judo,18:30,19:30,,#bbf7d0
+Giovedi,Luca,Judo,18:30,19:30,,#bbf7d0
+Giovedi,Anna,Disegno,21:00,23:00,,#fde68a

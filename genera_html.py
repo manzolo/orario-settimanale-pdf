@@ -31,11 +31,10 @@ COLORS = {
 DEFAULT_COLOR = '#fef9c3'
 
 STYLE = """
-  @page { size: 297mm 210mm; margin: 10mm; }
+  @page { size: 297mm 210mm; margin: 10mm; background: #eef1f5; }
   body {
     font-family: 'DejaVu Sans', Arial, sans-serif;
     margin: 0;
-    background: #eef1f5;
   }
   h2 {
     text-align: center;
@@ -50,6 +49,7 @@ STYLE = """
     border-collapse: separate;
     border-spacing: 3px;
     width: 100%;
+    table-layout: fixed;
   }
   th {
     background-color: #1e293b;
@@ -75,7 +75,6 @@ STYLE = """
     color: #64748b;
     background: #dde3eb;
     border-radius: 5px;
-    white-space: nowrap;
   }
   td.empty { background: transparent; }
   .name { font-weight: bold; font-size: 11px; color: #1e293b; }
@@ -183,7 +182,7 @@ def rowspan_col(e, day, start_idx, used_slots, grid):
 # ---------- rendering celle ----------
 
 def color_for(e):
-    return COLORS.get(e['nome'], DEFAULT_COLOR)
+    return e.get('colore') or COLORS.get(e['nome'], DEFAULT_COLOR)
 
 def cell_content(e):
     note = f'<br><span class="time">{e["note"]}</span>' if e.get('note') else ''
@@ -275,10 +274,22 @@ def generate(entries, mattina, out='orario.html'):
 
     skip = {d: [0, 0] if d in day_cols else [0] for d in active_days}
 
+    # Calcola le larghezze percentuali delle colonne
+    n_day_cols = sum(2 if d in day_cols else 1 for d in active_days)
+    orario_pct = 8
+    day_pct    = (100 - orario_pct) / n_day_cols
+
+    colgroup = ['  <colgroup>', f'    <col style="width:{orario_pct}%">']
+    for d in active_days:
+        n = 2 if d in day_cols else 1
+        for _ in range(n):
+            colgroup.append(f'    <col style="width:{day_pct:.2f}%">')
+    colgroup.append('  </colgroup>')
+
     lines = [f'<!DOCTYPE html>\n<html lang="it">\n<head>\n<meta charset="UTF-8">'
              f'\n<style>{STYLE}</style>\n</head>\n<body>'
-             f'\n<h2>Orario Settimanale</h2>\n<table>\n  <thead>\n    <tr>'
-             f'\n      <th>Orario</th>']
+             f'\n<h2>Orario Settimanale</h2>\n<table>\n' + '\n'.join(colgroup) +
+             f'\n  <thead>\n    <tr>\n      <th>Orario</th>']
 
     for d in active_days:
         ncols = 2 if d in day_cols else 1
@@ -292,7 +303,7 @@ def generate(entries, mattina, out='orario.html'):
         for e in mattina:
             by_day[e['giorno']].append(e)
 
-        lines.append('    <tr>')
+        lines.append('    <tr style="height:46px;">')
         lines.append('      <td class="orario">Mattina</td>')
         for d in active_days:
             cs = ' colspan="2"' if d in day_cols else ''
@@ -323,6 +334,15 @@ def generate(entries, mattina, out='orario.html'):
                 )
         lines.append('    </tr>')
 
+    # Separatore mattina / slot orari
+    if mattina:
+        total_cols = 1 + sum(2 if d in day_cols else 1 for d in active_days)
+        lines.append(
+            f'    <tr><td colspan="{total_cols}" style="padding:10px 0 8px 0; background:transparent;">'
+            f'<div style="height:3px; background:#94a3b8; border-radius:2px;"></div>'
+            f'</td></tr>'
+        )
+
     # Righe orarie
     for i, (slot_start, slot_end) in enumerate(used):
         label = f'{to_hhmm(slot_start)}–{to_hhmm(slot_end)}'
@@ -343,5 +363,6 @@ def generate(entries, mattina, out='orario.html'):
 
 if __name__ == '__main__':
     path = sys.argv[1] if len(sys.argv) > 1 else 'orario.csv'
+    out  = path.replace('.csv', '.html') if path.endswith('.csv') else path + '.html'
     entries, mattina = load(path)
-    generate(entries, mattina)
+    generate(entries, mattina, out)
