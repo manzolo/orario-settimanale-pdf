@@ -10,6 +10,16 @@ orario.csv  →  genera_html.py  →  orario.html  →  WeasyPrint  →  orario.
 
 Il tutto gira dentro un container Docker: **non serve nessuna dipendenza sul sistema host** tranne `docker` e `make`.
 
+### Dal CSV al PDF
+
+**1. I dati di partenza** — un semplice foglio CSV (modificabile anche con Excel o LibreOffice):
+
+![Screenshot CSV](docs/screenshot-csv.png)
+
+**2. Il risultato** — orario settimanale pronto per la stampa:
+
+![Screenshot output](docs/screenshot-output.png)
+
 ## Utilizzo
 
 1. Copia `orario.example.csv` in `orario.csv` e modificalo con i tuoi dati
