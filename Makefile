@@ -1,4 +1,4 @@
-.DEFAULT_GOAL := generate
+.DEFAULT_GOAL := help
 
 IMAGE_NAME := pdf-generator
 CSV        ?= orario.csv
@@ -24,7 +24,7 @@ build: ## Costruisce l'immagine Docker
 	docker compose build
 
 run: ## Genera il PDF (richiede build). Usa CSV=file.csv per file diversi
-	docker compose run --rm pdf-generator ./generate-pdf.sh $(CSV)
+	docker compose run --rm --user $$(id -u):$$(id -g) pdf-generator ./generate-pdf.sh $(CSV)
 	@echo ""
 	@if [ -f $(OUTPUT_PDF) ]; then \
 	    echo "  PDF generato: $(OUTPUT_PDF) ($$(du -h $(OUTPUT_PDF) | cut -f1))"; \
@@ -34,7 +34,9 @@ run: ## Genera il PDF (richiede build). Usa CSV=file.csv per file diversi
 
 generate: build run ## Esegue build + generazione PDF in un solo comando
 
-rebuild: clean build run ## Rimuove tutto, ricostruisce e rigenera il PDF
+rebuild: ## Ricostruisce l'immagine e rigenera il PDF
+	docker compose build
+	@$(MAKE) run CSV=$(CSV)
 
 clean: ## Rimuove i file generati e l'immagine Docker
 	@rm -f *.html *.pdf && echo "  Rimossi file generati" || true
